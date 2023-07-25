@@ -8,7 +8,7 @@ spin () {
 
     while [ "$(ps | grep $pid)" ]; do
         for i in "${spinner[@]}"; do
-            echo -ne "\033[34m\r[*] Downloading..please wait.........\e[33m[\033[32m$i\033[33m]\033[0m   "
+            echo -ne "\033[34m\r[*] $1...please wait.........\e[33m[\033[32m$i\033[33m]\033[0m   "
             sleep $delay
             printf "\b\b\b\b\b\b\b\b"
         done
@@ -20,7 +20,7 @@ spin () {
 
 # Function to install JDK 11 (Temurin)
 install_jdk11 () {
-    spin &
+    spin "Downloading JDK 11"
     JDK_URL="https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jdk/hotspot/normal/adoptopenjdk"
     curl -sL "$JDK_URL" -o jdk.tar.gz
     tar xf jdk.tar.gz
@@ -31,7 +31,7 @@ install_jdk11 () {
 
 # Function to download Gradlew
 download_gradlew () {
-    spin &
+    spin "Downloading Gradlew"
     GRADLEW_URL="https://github.com/gradle/gradle/releases/latest/download/gradle.zip"
     curl -sL "$GRADLEW_URL" -o gradle.zip
     unzip -q gradle.zip
@@ -47,7 +47,13 @@ build_app () {
 }
 
 # Main script
-apt update
+set -e # Exit script immediately if any command returns a non-zero status
+
+# Update repositories using apt with the spinner
+spin "Updating Repositories" &
+apt update > /dev/null 2>&1
+wait # Wait for the spinner to finish
+
 apt install -y curl tar unzip
 install_jdk11
 download_gradlew
