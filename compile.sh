@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Function to display a spinner while waiting
-spin () {
+show_spinner () {
     local pid=$!
     local delay=0.25
     local spinner=('█■■■■' '■█■■■' '■■█■■' '■■■█■' '■■■■█')
@@ -20,7 +20,7 @@ spin () {
 
 # Function to install JDK 11 (Temurin)
 install_jdk11 () {
-    spin "Downloading JDK 11"
+    show_spinner "Downloading JDK 11" &
     JDK_URL="https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jdk/hotspot/normal/adoptopenjdk"
     curl -sL "$JDK_URL" -o jdk.tar.gz
     tar xf jdk.tar.gz
@@ -31,7 +31,7 @@ install_jdk11 () {
 
 # Function to download Gradlew
 download_gradlew () {
-    spin "Downloading Gradlew"
+    show_spinner "Downloading Gradlew" &
     GRADLEW_URL="https://github.com/gradle/gradle/releases/latest/download/gradle.zip"
     curl -sL "$GRADLEW_URL" -o gradle.zip
     unzip -q gradle.zip
@@ -50,7 +50,7 @@ build_app () {
 set -e # Exit script immediately if any command returns a non-zero status
 
 # Update repositories using apt with the spinner
-spin "Updating Repositories" &
+show_spinner "Updating Repositories" &
 apt update > /dev/null 2>&1
 wait # Wait for the spinner to finish
 
